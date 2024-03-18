@@ -17,21 +17,6 @@ class File {
     std::string path;
     int line = 0;
 
-    void reset(bool begin = true) {     
-        file.clear();
-        file.close();
-        file.open(path, std::ios_base::in | std::ios_base::out);
-        if(begin) {
-            file.seekg(0, std::ios::beg);
-            this->line = 0;   
-        }
-        else {
-                for(int i = 0; i < line; i++) {
-                file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            }
-        }
-    }
-
 public:
 
     /**
@@ -101,6 +86,20 @@ public:
     }
 
     /**
+     * @brief Reads lines from the file until the end of the file. May be used in a while loop.
+     * @param str - the string to store the line read.
+     * @return std::istream& - the stream.
+     * @note #### Example:
+     * @note `file.readWhile(str);`
+     * @note `while(file.readWhile(str)) {`
+    */
+    std::istream& readWhile(std::string& str) {
+        reset(false);
+        line++;
+        return std::getline(file, str);
+    }
+
+    /**
      * @brief Reads all lines from the file.
      * @return std::string - the lines read.
      * @note #### Example:
@@ -141,5 +140,24 @@ public:
 
     std::string operator>> (std::string str) {
         return read();
+    }
+
+    /**
+     * @brief Reset the file to the beginning.
+     * @param begin - if true, the file is reset to the beginning. If false, the file is reset to the current line.
+     * @note #### Example:
+     * @note `file.reset();`
+    */
+    void reset(bool begin = true) {     
+        file.clear();
+        file.close();
+        file.open(path, std::ios_base::in | std::ios_base::out);
+        if(begin) {
+            file.seekg(0, std::ios::beg);
+            this->line = 0;   
+        }
+        else 
+            for(int i = 0; i < line; i++) 
+                file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  
     }
 };
